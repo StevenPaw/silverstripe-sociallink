@@ -22,8 +22,12 @@
     },
     "autoload": {
         "psr-4": {
-            "SilverStripeModule\\Skeleton\\": "src/",
-            "SilverStripeModule\\Skeleton\\Tests\\": "tests/php/"
+            "Stevenpaw\\SocialLink\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Stevenpaw\\SocialLink\\Tests\\": "tests/php/"
         }
     },
     "extra": {

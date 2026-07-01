@@ -1,1 +1,8 @@
-# see https://docs.silverstripe.org/en/developer_guides/configuration/configuration/
+---
+Name: stevenpaw-sociallink
+---
+# SocialLink is auto-discovered as a subclass of SilverStripe\LinkField\Models\Link.
+
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - Stevenpaw\SocialLink\SocialLinkCMSExtension
