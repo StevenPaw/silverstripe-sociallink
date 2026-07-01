@@ -1,88 +1,78 @@
-# Silverstripe CMS supported module skeleton
+# stevenpaw/silverstripe-sociallink
 
-A useful skeleton to more easily create a [Silverstripe CMS Module](https://docs.silverstripe.org/en/developer_guides/extending/modules/) that conform to the
-[Module Standard](https://docs.silverstripe.org/en/developer_guides/extending/modules/#module-standard).
+A Silverstripe 6+ module that adds a **Social Media Link** type to [silverstripe/linkfield](https://github.com/silverstripe/silverstripe-linkfield). Editors can pick a social platform from a searchable dropdown and enter the profile URL. Platform icons are self-hosted SVGs (DSGVO-compliant, no external CDN).
 
-This README contains descriptions of the parts of this module base you should customise to meet you own module needs.
-For example, the module name in the H1 above should be you own module name, and the description text you are reading now
-is where you should provide a good short explanation of what your module does.
+## Requirements
 
-Where possible we have included default text that can be included as is into your module and indicated in
-other places where you need to customise it
-
-Below is a template of the sections of your `README.md` you should ideally include to met the Module Standard
-and help others make use of your modules.
-
-## Steps to prepare this module for your own use
-
-Ensure you read the
-['publishing a module'](https://docs.silverstripe.org/en/developer_guides/extending/how_tos/publish_a_module/) guide
-and update your module's `composer.json` to designate your code as a Silversripe CMS module.
-
-- Clone this repository into a folder
-- Add your name/organisation to `LICENSE.md`
-- Update this README with information about your module. Ensure sections that aren't relevant are deleted and
-placeholders are edited where relevant
-- Review the README files in the various provided directories. You should ultimately delete these README files when you have added your code
-- Update the module's `composer.json` with your requirements and package name
-- Update (or remove) `package.json` with your requirements and package name. Run `yarn install` (or remove `yarn.lock`) to
-ensure dependencies resolve correctly
-- Clear the git history by running `rm -rf .git && git init`
-- Add and push to a VCS repository
-- Either [publish](https://getcomposer.org/doc/02-libraries.md#publishing-to-packagist) the module on packagist.org, or add a [custom repository](https://getcomposer.org/doc/02-libraries.md#publishing-to-a-vcs) to your main `composer.json`
-- Require the module in your main `composer.json`
-- If you need to build your css or js and are using components, injector, scss variables, etc from `silverstripe/admin`:
-  - Ensure that `silverstripe/admin` is installed with `composer install --prefer-source` instead of the default `--prefer-dist` (you can use `composer reinstall silverstripe/admin --prefer-source` if you already installed it)
-  - If you are relying on additional dependencies from `silverstripe/admin` instead of adding them as dependencies in your `package.json` file, you need to install third party dependencies in `silverstripe/admin` by running `yarn install` in the `vendor/silverstripe/admin/` directory.
-- Start developing your module!
-
-## License
-
-See [License](LICENSE.md)
-
-This module template defaults to using the "BSD-3-Clause" license. The BSD-3 license is one of the most
-permissive open-source license and is used by most Silverstripe CMS module.
-
-To publish your module under a different license:
-
-- update the [`license.md`](LICENSE.md) file
-- update the `license' key in your [`composer.json`](composer.json).
-
-You can use [choosealicense.com](https://choosealicense.com) to help you pick a suitable license for your project.
-
-You do not need to keep this section in your README file - the `LICENSE.md` file is sufficient.
+- PHP 8.3+
+- Silverstripe CMS 6.1+
+- silverstripe/linkfield 5+
 
 ## Installation
 
-Replace `silverstripe-module/skeleton` in the command below with the composer name of your module.
-
-```sh
-composer require silverstripe-module/skeleton
+```bash
+composer require stevenpaw/silverstripe-sociallink
 ```
 
-**Note:** When you have completed your module, submit it to Packagist or add it as a VCS repository to your
-project's composer.json, pointing to the private repository URL.
+After installing, run a dev/build to create the database table and seed the platform records:
 
-## Documentation
-
-- [Documentation readme](docs/en/README.md)
-
-Add links into your `docs/<language>` folder here unless your module only requires minimal documentation
-in that case, add here and remove the docs folder. You might use this as a quick table of content if you
-mhave multiple documentation pages.
-
-## Example configuration
-
-If your module makes use of the config API in Silverstripe CMS it's a good idea to provide an example config
-here that will get the module working out of the box and expose the user to the possible configuration options.
-Though note that in many cases simply linking to the documentation is enough.
-
-Provide a syntax-highlighted code examples where possible.
-
-```yaml
-Page:
-  config_option: true
-  another_config:
-    - item1
-    - item2
 ```
+/dev/build?flush=1
+```
+
+## Usage
+
+### In the CMS
+
+`SocialLink` is automatically available as a link type in any `LinkField`. Editors select a platform from the searchable dropdown and enter the profile URL.
+
+### In templates
+
+Check whether the current link is a SocialLink by testing `$SocialPlatform.exists`. The `SocialPlatform` object provides two helper methods:
+
+**Inline SVG** (recommended — no HTTP request, inherits CSS `color`):
+
+```silverstripe
+<a href="$Link" target="_blank">
+    <% if $SocialPlatform.exists %>
+        <span aria-hidden="true">$SocialPlatform.IconSVG</span>
+    <% end_if %>
+    $Title
+</a>
+```
+
+**Public URL** (for use in `<img>` or CSS `background-image`):
+
+```silverstripe
+<% if $SocialPlatform.exists %>
+    <img src="$SocialPlatform.IconUrl" alt="$SocialPlatform.Title" width="24" height="24">
+<% end_if %>
+```
+
+**Platform key** (e.g. `instagram`, `youtube`) for custom logic or CSS classes:
+
+```silverstripe
+<% if $SocialPlatform.exists %>
+    <span class="icon icon--$SocialPlatform.Key">...</span>
+<% end_if %>
+```
+
+Or in PHP:
+
+```php
+$platformKey = $link->getPlatform(); // e.g. 'instagram'
+```
+
+### Supported platforms
+
+46 platforms are seeded automatically on `dev/build`:
+
+Apple Music, Atlassian, Bandcamp, Behance, Bluesky, Dailymotion, Deezer, Discord, Dribbble, Facebook, Flickr, GitHub, GitLab, Instagram, KakaoTalk, LINE, LinkedIn, Medium, Microsoft Teams, Mixcloud, Odnoklassniki, Patreon, Pinterest, Reddit, ReverbNation, Signal, Skype, Slack, Snapchat, SoundCloud, Spotify, Steam, Telegram, Tidal, TikTok, Twitch, Vimeo, VK, WeChat, Weibo, WhatsApp, X (Twitter), YouTube, YouTube Music, Zoom
+
+Platforms without a matching FontAwesome 6 Brands icon (Deezer, KakaoTalk, ReverbNation, Signal, Tidal, Zoom) fall back to a generic share icon.
+
+If you need a new public platform, please submit an issue on the repository and I will gladly add it.
+
+## License
+
+BSD 3-Clause
