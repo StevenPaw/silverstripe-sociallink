@@ -1,6 +1,6 @@
 {
     "name": "stevenpaw/silverstripe-sociallink",
-    "description": "A small module for adding social links to silverstripe linkfields",
+    "description": "A small module for providing a new type of link with the silverstripe linkfield-module for social media links, providing fitting icons for the most used social media platforms in the style of fontawesome, but locally hosted, so with the german dsgvo in mind.",
     "type": "silverstripe-vendormodule",
     "keywords": [
         "silverstripe",
